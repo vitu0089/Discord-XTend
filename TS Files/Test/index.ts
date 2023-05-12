@@ -1,4 +1,4 @@
-import * as extendedClient from "./XClient/XClient"
+import * as extendedClient from "../XClient"
 import discord from "discord.js"
 
 const TOKEN = "NzgzMzEyNDYwMzE2MTQ3ODEy.G7LgcQ.DDi1meNhVbO5x_jGcRKgxlheDme4bxBk-BvMWw"
