@@ -22,22 +22,33 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const extendedClient = __importStar(require("./XClient/ExtendedClient"));
+const extendedClient = __importStar(require("./XClient/XClient"));
 const TOKEN = "NzgzMzEyNDYwMzE2MTQ3ODEy.G7LgcQ.DDi1meNhVbO5x_jGcRKgxlheDme4bxBk-BvMWw";
 const CLIENT = new extendedClient.default({ "intents": ["Guilds", "MessageContent", "GuildMessages", "GuildMembers", "GuildMessageTyping"] });
 const SERVER_ID = "782886097008197662";
 const CHANNEL_ID = "782886097008197665";
-CLIENT.on("ready", () => {
-    CLIENT.XTend.AddCommand("Slash", "Ping", {
-        Description: "Will return a Pong",
+CLIENT.on("ready", () => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("Ready...");
+    CLIENT.XTend.AddCommand("Text", "ping", {
+        Description: "Pings the server",
         Rank: "User",
-        Executable: (interaction) => {
-            interaction.reply("Recieved");
+        Executable: (message) => {
+            message.reply("Pong!");
         }
     });
-});
+    CLIENT.XTend.ClearExcessCommands();
+}));
 CLIENT.XTend.Lords.SetLords([
-    "109715580327591936"
+//"109715580327591936"
 ]);
 CLIENT.login(TOKEN);

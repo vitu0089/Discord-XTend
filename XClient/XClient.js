@@ -1,9 +1,20 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.XMessages = void 0;
 const discord_js_1 = __importDefault(require("discord.js"));
+const XMessages_1 = __importDefault(require("./XMessages"));
 var commands = {
     Text: {},
     Slash: {}
@@ -12,9 +23,11 @@ var hasCommand = {
     Text: false,
     Slash: false
 };
+var DEFAULT_PREFIX = "!";
 class XModule {
     constructor(client) {
         var _a;
+        this.Prefix = DEFAULT_PREFIX;
         // Command handler states & tools
         this.CommandHandler = {
             handlerState: {
@@ -75,6 +88,15 @@ class XModule {
             }
             return embed;
         };
+        this.CreateDefaultEmbed = (name) => {
+            var message = XMessages_1.default.GetMessage(name) || XMessages_1.default.GetMessage("InvalidDefault") || {
+                Name: "Null",
+                Title: "Null",
+                Description: "Null",
+                Color: "Grey"
+            };
+            return this.CreateEmbed(message === null || message === void 0 ? void 0 : message.Title, message === null || message === void 0 ? void 0 : message.Description, { Color: message === null || message === void 0 ? void 0 : message.Color });
+        };
         this.AddCommand = (type, name, settings) => {
             var _a;
             var currentCatagory = commands[type];
@@ -82,6 +104,7 @@ class XModule {
             if (currentCatagory[name]) {
                 console.log("Overwriting command: " + name);
             }
+            // @ts-ignore  Not sure how to handle this error
             currentCatagory[name] = {
                 Description: settings.Description,
                 Rank: settings.Rank,
@@ -97,22 +120,46 @@ class XModule {
             (_a = this.Client.application) === null || _a === void 0 ? void 0 : _a.commands.create(newCommand);
         };
         this.RemoveCommand = (name, type) => {
+            var _a;
             type = type || "Both";
             if (type != "Both") {
                 delete commands[type][name];
                 return;
             }
             if (commands.Slash[name]) {
+                var exsisting = (_a = this.Client.application) === null || _a === void 0 ? void 0 : _a.commands.cache.find(v => v.name == name);
+                if (this.Client.application && exsisting) {
+                    this.Client.application.commands.delete(exsisting);
+                }
                 delete commands.Slash[name];
             }
             if (commands.Text[name]) {
                 delete commands.Text[name];
             }
         };
+        this.ClearExcessCommands = () => {
+            return new Promise((res, rej) => __awaiter(this, void 0, void 0, function* () {
+                if (!this.Client.application) {
+                    return;
+                }
+                (yield this.Client.application.commands.fetch()).forEach((command, key, map) => {
+                    var _a, _b, _c;
+                    if (!commands.Slash[command.name]) {
+                        (_a = this.Client.application) === null || _a === void 0 ? void 0 : _a.commands.delete(command);
+                    }
+                    if (key == ((_c = (_b = this.Client.application) === null || _b === void 0 ? void 0 : _b.commands.cache.last()) === null || _c === void 0 ? void 0 : _c.id)) {
+                        res(true);
+                    }
+                });
+            }));
+        };
         this.HasPermission = (member, access) => {
             return (access == "User" ||
                 access == "Admin" && member.permissions.has("Administrator") ||
                 access == "Lord" && this.Lords.IsLord(member.id));
+        };
+        this.SetPrefix = (prefix) => {
+            this.Prefix = prefix == "Default" && DEFAULT_PREFIX || prefix != "None" && prefix || "";
         };
         this.Client = client;
         // Check for commands [Only works for slash commands]
@@ -120,20 +167,56 @@ class XModule {
             hasCommand.Slash = true;
         }
         // Command handler
-        client.on("interactionCreate", (int) => {
+        client.on("interactionCreate", (int) => __awaiter(this, void 0, void 0, function* () {
             if (!int.isCommand() || !hasCommand.Slash || !this.CommandHandler.IsRunning()) {
                 return;
             }
-            commands.Slash[int.commandName].Executable(int);
-        });
+            yield int.deferReply();
+            var command = commands.Slash[int.commandName];
+            var member = int.member;
+            if (member && !this.HasPermission(member, command.Rank)) {
+                int.editReply({
+                    embeds: [
+                        this.CreateEmbed("Permissions NULL", "You do not have permission to execute this command", { Color: "DarkRed" })
+                    ]
+                });
+                return;
+            }
+            command.Executable(int);
+        }));
         client.on("messageCreate", (mes) => {
+            var _a;
             if (!hasCommand.Text || !this.CommandHandler.IsRunning()) {
                 return;
             }
-            // commands.Slash[].Executable(int)
+            var content = mes.content;
+            var splitContent = content.substring(this.Prefix.length).split(" ");
+            var command = commands.Text[splitContent[0]];
+            var member = mes.member;
+            if (((_a = mes.member) === null || _a === void 0 ? void 0 : _a.user.bot) || !content.startsWith(this.Prefix)) {
+                return;
+            }
+            if (!command) {
+                mes.reply({
+                    embeds: [
+                        this.CreateDefaultEmbed("CommandError")
+                    ]
+                });
+                return;
+            }
+            if (member && !this.HasPermission(member, command.Rank)) {
+                mes.reply({
+                    embeds: [
+                        this.CreateDefaultEmbed("PermissionError")
+                    ]
+                });
+                return;
+            }
+            command.Executable(mes);
         });
     }
 }
+exports.XMessages = require("./XMessages");
 class xClient extends discord_js_1.default.Client {
     constructor() {
         super(...arguments);

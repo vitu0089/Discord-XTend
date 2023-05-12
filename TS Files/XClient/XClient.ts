@@ -1,7 +1,9 @@
 import discord from "discord.js"
+import xMessages from "./XMessages"
 
 export type XRanks = "User" | "Admin" | "Lord"
 export type XCommandType = "Slash" | "Text"
+export type XPrefix = string | "Default" | "None"
 
 export interface XSlashCommand {
     Description:string,
@@ -12,7 +14,7 @@ export interface XSlashCommand {
 export interface XTextCommand {
     Description:string,
     Rank:XRanks,
-    Executable:(interaction:discord.MessageInteraction) => void
+    Executable:(message:discord.Message) => void
 }
 
 var commands:{Text:{[key:string]:XTextCommand},Slash:{[key:string]:XSlashCommand}} = {
@@ -25,8 +27,11 @@ var hasCommand = {
     Slash: false
 }
 
+var DEFAULT_PREFIX = "!"
+
 class XModule {
     private Client:discord.Client
+    Prefix:string = DEFAULT_PREFIX
 
 
 
@@ -107,20 +112,61 @@ class XModule {
         }
 
         // Command handler
-        client.on("interactionCreate",(int) => {
+        client.on("interactionCreate",async (int) => {
             if (!int.isCommand() || !hasCommand.Slash || !this.CommandHandler.IsRunning()) {
                 return
             }
 
-            commands.Slash[int.commandName].Executable(int)
+            await int.deferReply()
+
+            var command = commands.Slash[int.commandName]
+            var member = int.member as discord.GuildMember
+
+            if (member && !this.HasPermission(member,command.Rank)) {
+                int.editReply({
+                    embeds:[
+                        this.CreateEmbed("Permissions NULL","You do not have permission to execute this command",{Color:"DarkRed"})
+                    ]
+                })
+                return
+            }
+
+            command.Executable(int)
         })
 
         client.on("messageCreate",(mes) => {
             if (!hasCommand.Text || !this.CommandHandler.IsRunning()) {
                 return
             }
+            
+            var content = mes.content
+            var splitContent = content.substring(this.Prefix.length).split(" ")
+            var command = commands.Text[splitContent[0]]
+            var member = mes.member as discord.GuildMember
+            
+            if (mes.member?.user.bot || !content.startsWith(this.Prefix)) {
+                return
+            }
 
-            // commands.Slash[].Executable(int)
+            if (!command) {
+                mes.reply({
+                    embeds:[
+                        this.CreateDefaultEmbed("CommandError")
+                    ]
+                })
+                return
+            }
+
+            if (member && !this.HasPermission(member,command.Rank)) {
+                mes.reply({
+                    embeds:[
+                        this.CreateDefaultEmbed("PermissionError")
+                    ]
+                })
+                return
+            }
+
+            command.Executable(mes)
         })
     }
 
@@ -141,6 +187,17 @@ class XModule {
         return embed
     }
 
+    CreateDefaultEmbed = (name:string) => {
+        var message = xMessages.GetMessage(name) || xMessages.GetMessage("InvalidDefault") || {
+            Name:"Null",
+            Title:"Null",
+            Description:"Null",
+            Color:"Grey"
+        }
+
+        return this.CreateEmbed(message?.Title,message?.Description,{Color:message?.Color})
+    }
+
     AddCommand = (type:XCommandType,name:string,settings:XSlashCommand | XTextCommand) => {
         var currentCatagory = commands[type]
         name = name.toLowerCase()
@@ -149,6 +206,7 @@ class XModule {
             console.log("Overwriting command: " + name)
         }
         
+        // @ts-ignore  Not sure how to handle this error
         currentCatagory[name] = {
             Description: settings.Description,
             Rank: settings.Rank,
@@ -177,12 +235,36 @@ class XModule {
         }
 
         if (commands.Slash[name]) {
+            var exsisting = this.Client.application?.commands.cache.find(v => v.name == name)
+
+            if (this.Client.application && exsisting) {
+                this.Client.application.commands.delete(exsisting)
+            }
+
             delete commands.Slash[name]
         }
 
         if (commands.Text[name]) {
             delete commands.Text[name]
         }
+    }
+
+    ClearExcessCommands = () => {
+        return new Promise(async (res,rej) => {
+            if (!this.Client.application) {
+                return
+            }
+
+            (await this.Client.application.commands.fetch()).forEach((command,key,map) => {
+                if (!commands.Slash[command.name]) {
+                    this.Client.application?.commands.delete(command)
+                }
+
+                if (key == this.Client.application?.commands.cache.last()?.id) {
+                    res(true)
+                }
+            })
+        })
     }
 
     HasPermission = (member:discord.GuildMember,access:XRanks) => {
@@ -192,7 +274,13 @@ class XModule {
             access == "Lord" && this.Lords.IsLord(member.id)
         )
     }
+
+    SetPrefix = (prefix:XPrefix) => {
+        this.Prefix = prefix == "Default" && DEFAULT_PREFIX || prefix != "None" && prefix || ""
+    }
 }
+
+export var XMessages = require("./XMessages")
 
 export default class xClient extends discord.Client {
     XTend = new XModule(this)
