@@ -1,12 +1,19 @@
 {
-  "name": "discord-extended",
+  "name": "discord-x",
   "version": "0.6.0",
   "description": "",
   "main": "XClient.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "keywords": [
+    "discord",
+    "extended",
+    "utils",
+    "utilities",
+    "discord utilities"
+  ],
+  "author": "vitu0089 <gamerw30@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^14.10.2"
