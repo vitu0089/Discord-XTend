@@ -177,7 +177,7 @@ class XModule {
             if (member && !this.HasPermission(member, command.Rank)) {
                 int.editReply({
                     embeds: [
-                        this.CreateEmbed("Permissions NULL", "You do not have permission to execute this command", { Color: "DarkRed" })
+                        this.CreateDefaultEmbed("PermissionError")
                     ]
                 });
                 return;
