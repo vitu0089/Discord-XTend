@@ -4,7 +4,8 @@
   ],
 
   "exclude": [
-    "./Test"
+    "./Test",
+    "./lib"
   ],
 
   "compilerOptions": {
