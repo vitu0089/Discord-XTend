@@ -19,5 +19,12 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^14.10.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vitu0089/Discord-XTend"
+  },
+  "bugs": {
+    "url": "https://github.com/vitu0089/Discord-XTend/issues"
   }
 }
