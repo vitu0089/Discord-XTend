@@ -1,8 +1,9 @@
 {
   "name": "discord-extended",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "Used to simplify discord bot creation. It's mostly for personal use, but if others find it usefull, here it is :)",
   "main": "XClient.js",
+  "types": "./lib/XClient",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc"
