@@ -1,5 +1,3 @@
-import discord from "discord.js"
-
 export default {
     Print(...content:string[]) {
         var uptime = process.uptime()
