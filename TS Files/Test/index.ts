@@ -19,8 +19,4 @@ CLIENT.on("ready",async () => {
     CLIENT.XTend.ClearExcessCommands()
 })
 
-CLIENT.XTend.Lords.SetLords([
-    //"109715580327591936"
-])
-
 CLIENT.login(TOKEN)
