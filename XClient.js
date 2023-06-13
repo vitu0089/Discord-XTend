@@ -12,13 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.XGlobal = void 0;
 const discord_js_1 = __importDefault(require("discord.js"));
 const XMessages_1 = __importDefault(require("./XMessages"));
-const XUtils_1 = __importDefault(require("./XUtils"));
+const XGlobal_1 = __importDefault(require("./XGlobal"));
+exports.XGlobal = XGlobal_1.default;
 var XModule;
 (function (XModule) {
     class Client {
-        constructor(client) {
+        constructor(Client) {
             var _a;
             this.Prefix = DEFAULT_PREFIX;
             // Command handler states & tools
@@ -29,7 +31,7 @@ var XModule;
                 },
                 Start() {
                     if (this.handlerState.stopped) {
-                        XUtils_1.default.Print("Handler has been stopped for good");
+                        XGlobal_1.default.print("Handler has been stopped for good");
                     }
                     this.handlerState.paused = false;
                 },
@@ -154,13 +156,13 @@ var XModule;
             this.SetPrefix = (prefix) => {
                 this.Prefix = prefix == "Default" && DEFAULT_PREFIX || prefix != "None" && prefix || "";
             };
-            this.Client = client;
+            this.Client = Client;
             // Check for commands [Only works for slash commands]
-            if ((((_a = this.Client.application) === null || _a === void 0 ? void 0 : _a.commands.cache.size) || 0) > 0) {
+            if ((((_a = Client.application) === null || _a === void 0 ? void 0 : _a.commands.cache.size) || 0) > 0) {
                 hasCommand.Slash = true;
             }
             // Command handler
-            this.Client.on("interactionCreate", (int) => __awaiter(this, void 0, void 0, function* () {
+            Client.on("interactionCreate", (int) => __awaiter(this, void 0, void 0, function* () {
                 if (!int.isCommand() || !hasCommand.Slash || !this.CommandHandler.IsRunning()) {
                     return;
                 }
@@ -177,7 +179,7 @@ var XModule;
                 }
                 command.Executable(int);
             }));
-            this.Client.on("messageCreate", (mes) => {
+            Client.on("messageCreate", (mes) => {
                 var _a;
                 if (!hasCommand.Text || !this.CommandHandler.IsRunning()) {
                     return;
@@ -207,9 +209,9 @@ var XModule;
                 }
                 command.Executable(mes);
             });
-            this.Client.once("ready", () => {
+            Client.once("ready", () => {
                 var _a;
-                XUtils_1.default.Print(((_a = this.Client.user) === null || _a === void 0 ? void 0 : _a.username) + " is ready...");
+                XGlobal_1.default.print(((_a = Client.user) === null || _a === void 0 ? void 0 : _a.username) + " is ready...");
             });
         }
     }

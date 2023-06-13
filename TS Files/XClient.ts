@@ -1,6 +1,6 @@
 import Discord from "discord.js"
 import XMessages from "./XMessages"
-import XUtils from "./XUtils"
+import XGlobal from "./XGlobal"
 
 module XModule {
     export type XRanks = "User" | "Admin" | "Lord"
@@ -20,12 +20,8 @@ module XModule {
     }
 
     class Client {
-        Client:Discord.Client
         Prefix:string = DEFAULT_PREFIX
-
-        // Refference
-        uptime:number = 0
-
+        private Client:Discord.Client
 
         // Command handler states & tools
         CommandHandler = {
@@ -36,7 +32,7 @@ module XModule {
 
             Start() {
                 if (this.handlerState.stopped) {
-                    XUtils.Print("Handler has been stopped for good")
+                    XGlobal.print("Handler has been stopped for good")
                 }
         
                 this.handlerState.paused = false
@@ -95,16 +91,16 @@ module XModule {
 
 
 
-        constructor(client:Discord.Client) {
-            this.Client = client
+        constructor(Client:Discord.Client) {
+            this.Client = Client
 
             // Check for commands [Only works for slash commands]
-            if ((this.Client.application?.commands.cache.size || 0) > 0) {
+            if ((Client.application?.commands.cache.size || 0) > 0) {
                 hasCommand.Slash = true
             }
 
             // Command handler
-            this.Client.on("interactionCreate",async (int) => {
+            Client.on("interactionCreate",async (int) => {
                 if (!int.isCommand() || !hasCommand.Slash || !this.CommandHandler.IsRunning()) {
                     return
                 }
@@ -126,7 +122,7 @@ module XModule {
                 command.Executable(int)
             })
 
-            this.Client.on("messageCreate",(mes) => {
+            Client.on("messageCreate",(mes) => {
                 if (!hasCommand.Text || !this.CommandHandler.IsRunning()) {
                     return
                 }
@@ -161,8 +157,8 @@ module XModule {
                 command.Executable(mes)
             })
 
-            this.Client.once("ready",() => {
-                XUtils.Print(this.Client.user?.username + " is ready...")
+            Client.once("ready",() => {
+                XGlobal.print(Client.user?.username + " is ready...")
             })
         }
 
@@ -274,91 +270,6 @@ module XModule {
         SetPrefix = (prefix:XPrefix) => {
             this.Prefix = prefix == "Default" && DEFAULT_PREFIX || prefix != "None" && prefix || ""
         }
-
-        GetWrittenTime(){
-            var ReturnVariable = ""
-            var Uptime = (this.uptime || 0) / 1000
-            var Seconds = Math.floor(Uptime % 60)
-            var Minutes = Math.floor(Uptime / 60 % 60)
-            var Hours = Math.floor(Uptime / 60 / 60)
-        
-            if (Hours > 0) {
-                    ReturnVariable += (Hours < 10 && "0" || "") + Hours.toString() + "h"
-            }
-        
-            if (Minutes > 0 || Hours > 0) {
-                ReturnVariable += Hours > 0 && " " + (Minutes < 10 && "0" || "") + Minutes.toString() + "m" || Minutes.toString() + "m"
-            }
-        
-            ReturnVariable += ((Minutes > 0 || Hours > 0) && " " || "") + (Seconds < 10 && "0" || "") + Seconds.toString() + "s" || Seconds.toString() + "s"
-        
-            return ReturnVariable
-        }
-    
-        // Colors from: https://stackoverflow.com/questions/9781218/how-to-change-node-jss-console-font-color
-        print(...Data: any[]){
-            // Add to start of array
-            Data.unshift("\x1b[36m[\x1b[37m" + this.GetWrittenTime() + "\x1b[36m]\x1b[0m \x1b[34m")
-            console.log.apply(console,Data)
-        }
-    
-        test(...Data: any[]){
-            // Check
-            if (!Settings.TestEnviroment) {
-                return
-            }
-    
-            // Add to start of array
-            Data.unshift("\x1b[36m[\x1b[37m" + this.GetWrittenTime() + " \x1b[32m\x1b[5mTest\x1b[36m\x1b[0m]\x1b[0m \x1b[34m")
-            console.log.apply(console,Data)
-        }
-        
-        error(ExceptionMessage:string | Error){
-            const HasError = ExceptionMessage instanceof Error
-            var Data:any[] = []
-            var Exception =  HasError && ExceptionMessage || new Error()
-            if (!HasError) {
-                Exception.name = ExceptionMessage
-            }
-    
-            // Send to sentry error tracker
-            if (!Settings.TestEnviroment) {
-                Sentry.captureException(Exception)
-            }
-            
-            // Add to start of array
-            Data.unshift("\x1b[36m[\x1b[37m" + this.GetWrittenTime() + " \x1b[31m\x1b[5mError\x1b[36m\x1b[0m]\x1b[0m \x1b[34m")
-            
-            // Add to end of array
-            Data.push(Exception.stack)
-            console.log.apply(console,Data)
-        }
-    
-        warn(ExceptionMessage:string) {
-            var Data:any[] = []
-            var Exception = new Error()
-            Exception.name = ExceptionMessage
-    
-            // Send to sentry error tracker
-            if (!Settings.TestEnviroment) {
-                Sentry.captureException(Exception)
-            }
-    
-            // Add to start of array
-            Data.unshift("\x1b[36m[\x1b[37m" + this.GetWrittenTime() + " \x1b[33m\x1b[5mWarning\x1b[36m\x1b[0m]\x1b[0m \x1b[34m")
-    
-            // Add to end of array
-            Data.push(Exception.stack)
-            console.log.apply(console,Data)
-        }
-    
-        wait(seconds: number){
-            return new Promise(resolve => setTimeout(resolve, seconds * 1000))
-        }
-        
-        tick(){
-            return Math.floor(Date.now()/1000)
-        }
     }
 
     var commands:{Text:{[key:string]:XTextCommand},Slash:{[key:string]:XSlashCommand}} = {
@@ -379,3 +290,4 @@ module XModule {
 }
 
 export default XModule
+export { XGlobal }

@@ -1,4 +1,5 @@
-import discord from "discord.js";
+import Discord from "discord.js";
+import XGlobal from "./XGlobal";
 declare module XModule {
     export type XRanks = "User" | "Admin" | "Lord";
     export type XCommandType = "Slash" | "Text";
@@ -6,16 +7,16 @@ declare module XModule {
     export interface XSlashCommand {
         Description: string;
         Rank: XRanks;
-        Executable: (interaction: discord.CommandInteraction) => void;
+        Executable: (interaction: Discord.CommandInteraction) => void;
     }
     export interface XTextCommand {
         Description: string;
         Rank: XRanks;
-        Executable: (message: discord.Message) => void;
+        Executable: (message: Discord.Message) => void;
     }
     class Client {
-        Client: discord.Client;
         Prefix: string;
+        private Client;
         CommandHandler: {
             handlerState: {
                 paused: boolean;
@@ -35,22 +36,23 @@ declare module XModule {
             ResetLord(): void;
             IsLord(lordID: string): boolean;
         };
-        constructor(client: discord.Client);
+        constructor(Client: Discord.Client);
         CreateEmbed: (Title: string, Description: string, Options?: {
-            Color?: discord.ColorResolvable;
+            Color?: Discord.ColorResolvable;
             Timestamp?: string | boolean;
-            Fields?: discord.EmbedField[];
-        }) => discord.EmbedBuilder;
-        CreateDefaultEmbed: (name: string) => discord.EmbedBuilder;
+            Fields?: Discord.EmbedField[];
+        }) => Discord.EmbedBuilder;
+        CreateDefaultEmbed: (name: string) => Discord.EmbedBuilder;
         AddCommand: (type: XCommandType, name: string, settings: XSlashCommand | XTextCommand) => void;
         RemoveCommand: (name: string, type?: XCommandType | "Both") => void;
         ClearExcessCommands: () => Promise<unknown>;
-        HasPermission: (member: discord.GuildMember, access: XRanks) => boolean;
+        HasPermission: (member: Discord.GuildMember, access: XRanks) => boolean;
         SetPrefix: (prefix: XPrefix) => void;
     }
-    export class XClient extends discord.Client {
+    export class XClient extends Discord.Client {
         XTend: Client;
     }
     export {};
 }
 export default XModule;
+export { XGlobal };

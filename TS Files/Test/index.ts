@@ -1,4 +1,4 @@
-import extended from "../XClient"
+import extended, {XGlobal} from "../XClient"
 import discord from "discord.js"
 
 const TOKEN = "NzgzMzEyNDYwMzE2MTQ3ODEy.GTNIr5.ZYUq4fCbUtPAXXyriI2v9ibsLHHCmeJ86h0wkI"

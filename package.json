@@ -18,6 +18,7 @@
   "author": "vitu0089 <gamerw30@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "@sentry/node": "^7.54.0",
     "discord.js": "^14.10.2"
   },
   "repository": {

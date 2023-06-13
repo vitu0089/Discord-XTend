@@ -27,7 +27,4 @@ CLIENT.on("ready", () => __awaiter(void 0, void 0, void 0, function* () {
     });
     CLIENT.XTend.ClearExcessCommands();
 }));
-CLIENT.XTend.Lords.SetLords([
-//"109715580327591936"
-]);
 CLIENT.login(TOKEN);
