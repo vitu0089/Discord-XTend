@@ -4,11 +4,13 @@ declare var Client: Discord.Client | undefined;
 declare var IsTest: boolean;
 declare var EnableTestErrorCatch: boolean;
 declare const _default: {
-    TweakSettings(Settings: {
+    ChangeSettings(Settings: {
         Client?: Discord.Client;
         IsTest?: boolean;
         EnableTestErrorCatch?: boolean;
     }): void;
+    SetUptime(NewTime: number): void;
+    SetUptimeDefault(): void;
     SetupSentry(SentrySettings: Sentry.NodeOptions, Force?: true): void;
     GetWrittenTime(): string;
     print(...Data: any[]): void;

@@ -5,9 +5,10 @@ var SentryEnabled = false
 var Client:Discord.Client | undefined = undefined
 var IsTest:boolean = false
 var EnableTestErrorCatch:boolean = false
+var ReplacementUptime:number | null = null
 
 export default {
-    TweakSettings(Settings:{
+    ChangeSettings(Settings:{
         Client?:Discord.Client,
         IsTest?:boolean,
         EnableTestErrorCatch?:boolean
@@ -15,6 +16,16 @@ export default {
         Client = Settings.Client
         IsTest = Settings.IsTest && true || false
         EnableTestErrorCatch = Settings.EnableTestErrorCatch && true || false
+    },
+
+    SetUptime(NewTime:number) {
+        // Used to overwrite the default client uptime
+        ReplacementUptime = NewTime
+    },
+
+    SetUptimeDefault() {
+        // Reset back to default client uptime
+        ReplacementUptime = null
     },
 
     SetupSentry(SentrySettings:Sentry.NodeOptions,Force?:true) {
@@ -29,7 +40,7 @@ export default {
 
     GetWrittenTime(){
         var ReturnVariable = ""
-        var Uptime = (Client && Client.uptime || 0) / 1000
+        var Uptime = ReplacementUptime || (Client && Client.uptime || 0) / 1000
         var Seconds = Math.floor(Uptime % 60)
         var Minutes = Math.floor(Uptime / 60 % 60)
         var Hours = Math.floor(Uptime / 60 / 60)

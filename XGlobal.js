@@ -8,11 +8,20 @@ var SentryEnabled = false;
 var Client = undefined;
 var IsTest = false;
 var EnableTestErrorCatch = false;
+var ReplacementUptime = null;
 exports.default = {
-    TweakSettings(Settings) {
+    ChangeSettings(Settings) {
         Client = Settings.Client;
         IsTest = Settings.IsTest && true || false;
         EnableTestErrorCatch = Settings.EnableTestErrorCatch && true || false;
+    },
+    SetUptime(NewTime) {
+        // Used to overwrite the default client uptime
+        ReplacementUptime = NewTime;
+    },
+    SetUptimeDefault() {
+        // Reset back to default client uptime
+        ReplacementUptime = null;
     },
     SetupSentry(SentrySettings, Force) {
         if (SentryEnabled && !Force) {
@@ -24,7 +33,7 @@ exports.default = {
     },
     GetWrittenTime() {
         var ReturnVariable = "";
-        var Uptime = (Client && Client.uptime || 0) / 1000;
+        var Uptime = ReplacementUptime || (Client && Client.uptime || 0) / 1000;
         var Seconds = Math.floor(Uptime % 60);
         var Minutes = Math.floor(Uptime / 60 % 60);
         var Hours = Math.floor(Uptime / 60 / 60);
