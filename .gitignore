@@ -1,2 +1,6 @@
 /node_modules
 /lib/Test
+/lib/Token.d.ts
+/Test/Token.js
+/TS Files/Test/Token.ts
+Token.js

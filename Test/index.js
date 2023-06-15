@@ -31,9 +31,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const XClient_1 = __importStar(require("../XClient"));
-const TOKEN = "NzgzMzEyNDYwMzE2MTQ3ODEy.GcDe_D.lZikNMSM85hVvOvL0jpEVGc_WLWQ4oxtq2-e5A";
+const Token_1 = __importDefault(require("./Token"));
 const CLIENT = new XClient_1.default.XClient({ "intents": ["Guilds", "MessageContent", "GuildMessages", "GuildMembers", "GuildMessageTyping"] });
 const SERVER_ID = "782886097008197662";
 const CHANNEL_ID = "782886097008197665";
@@ -46,4 +49,4 @@ CLIENT.on("ready", () => __awaiter(void 0, void 0, void 0, function* () {
     });
     CLIENT.XTend.ClearExcessCommands();
 }));
-CLIENT.login(TOKEN);
+CLIENT.login(Token_1.default);
