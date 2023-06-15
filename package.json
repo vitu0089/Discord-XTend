@@ -13,7 +13,8 @@
     "extended",
     "utils",
     "utilities",
-    "discord utilities"
+    "discord utilities",
+    "command handler"
   ],
   "author": "vitu0089 <gamerw30@gmail.com>",
   "license": "ISC",

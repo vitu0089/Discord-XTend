@@ -1,5 +1,6 @@
 import Discord from "discord.js";
-import XGlobal from "./XGlobal";
+import Messages from "./XMessages";
+import Global from "./XGlobal";
 declare module XModule {
     export type XRanks = "User" | "Admin" | "Lord";
     export type XCommandType = "Slash" | "Text";
@@ -55,4 +56,4 @@ declare module XModule {
     export {};
 }
 export default XModule;
-export { XGlobal };
+export { Global as XGlobal, Messages as XMessages };

@@ -1,6 +1,6 @@
 import Discord from "discord.js"
-import XMessages from "./XMessages"
-import XGlobal from "./XGlobal"
+import Messages from "./XMessages"
+import Global from "./XGlobal"
 
 module XModule {
     export type XRanks = "User" | "Admin" | "Lord"
@@ -32,7 +32,7 @@ module XModule {
 
             Start() {
                 if (this.handlerState.stopped) {
-                    XGlobal.print("Handler has been stopped for good")
+                    Global.print("Handler has been stopped for good")
                 }
         
                 this.handlerState.paused = false
@@ -158,7 +158,7 @@ module XModule {
             })
 
             Client.once("ready",() => {
-                XGlobal.print(Client.user?.username + " is ready...")
+                Global.print(Client.user?.username + " is ready...")
             })
         }
 
@@ -180,7 +180,7 @@ module XModule {
         }
 
         CreateDefaultEmbed = (name:string) => {
-            var message = XMessages.GetMessage(name) || XMessages.GetMessage("InvalidDefault") || {
+            var message = Messages.GetMessage(name) || Messages.GetMessage("InvalidDefault") || {
                 Name:"Null",
                 Title:"Null",
                 Description:"Null",
@@ -290,4 +290,7 @@ module XModule {
 }
 
 export default XModule
-export { XGlobal }
+export { 
+    Global as XGlobal,
+    Messages as XMessages
+}
