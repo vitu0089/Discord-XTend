@@ -1,6 +1,8 @@
 import Discord from "discord.js"
 import Messages from "./XMessages"
 import Global from "./XGlobal"
+import Queues from "./XQueue"
+import SQL from "./XMySQL"
 
 module XModule {
     export type XRanks = "User" | "Admin" | "Lord"
@@ -292,5 +294,7 @@ module XModule {
 export default XModule
 export { 
     Global as XGlobal,
-    Messages as XMessages
+    Messages as XMessages,
+    Queues as XQueue,
+    SQL as XMySQL
 }

@@ -12,12 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.XMessages = exports.XGlobal = void 0;
+exports.XMySQL = exports.XQueue = exports.XMessages = exports.XGlobal = void 0;
 const discord_js_1 = __importDefault(require("discord.js"));
 const XMessages_1 = __importDefault(require("./XMessages"));
 exports.XMessages = XMessages_1.default;
 const XGlobal_1 = __importDefault(require("./XGlobal"));
 exports.XGlobal = XGlobal_1.default;
+const XQueue_1 = __importDefault(require("./XQueue"));
+exports.XQueue = XQueue_1.default;
+const XMySQL_1 = __importDefault(require("./XMySQL"));
+exports.XMySQL = XMySQL_1.default;
 var XModule;
 (function (XModule) {
     class Client {

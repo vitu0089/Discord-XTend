@@ -15,5 +15,13 @@ For error logging, use Sentry.io. Sentry is great for marking where the errors h
 moving a little fast for reading errors. When using Global.warn or Global.error, you will be sending a message to the Sentry servers, but if you haven't designated a "DSN" for the sentry module to work with, the module just gets excluded.
 
 
+XMySQL:
+To add on top, a custom MySQL handler. This comes with a built-in queue system. This system can be disabled in favor for custom methods if desired. You can enable caching, which will save the data that you request for a default 2 minutes. If desired, the RowHandler argument lets you run a function on every row of the requested data. This is not required, and will disable if left blank.
+
+
+XQueue:
+Use this system to create queues for handling data in the correct order. Every queue
+
+
 Feel free to ask for help over on my support discord:
 www.discord.gg/ZbBEPX4x6Z
